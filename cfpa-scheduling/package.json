@@ -1,0 +1,16 @@
+{
+  "name": "cfpa-scheduling",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Noah Strong <noah@inspiredware.com>",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "convert-excel-to-json": "^1.4.1",
+    "inner-join": "^4.0.0",
+    "string-hash": "^1.1.3"
+  }
+}
