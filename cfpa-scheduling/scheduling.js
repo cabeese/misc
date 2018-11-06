@@ -2,10 +2,6 @@ const innerjoin = require("inner-join");
 const excelToJson = require('convert-excel-to-json');
 const stringHash = require("string-hash");
 
-/* Temp - the filenames we expect to find */
-const EMS_FILE_NAME = "ems-small.xlsx";
-const DAVID_SCHED_FILE_NAME = "david-small.xlsx";
-
 /**
  * Read an excel (.xls or .xlsx) file and return an object with the data.
  * @param {string} filename The excel sheet file name
@@ -110,10 +106,10 @@ function eventToString(event){
     return `${date}\t${event[nameKey]}`;
 }
 
-function main(){
+function main(emsFn, davidFn){
     // read both sheets
-    let emsEvents = readExcelFile(EMS_FILE_NAME, "Sheet");
-    let dvdEvents = readExcelFile(DAVID_SCHED_FILE_NAME, "Events");
+    let emsEvents = readExcelFile(emsFn, "Sheet");
+    let dvdEvents = readExcelFile(davidFn, "Events");
 
     // find first and last dates on EMS sheet (smaller range)
     let firstEventDate = emsEvents[0]["Booking Date"];
