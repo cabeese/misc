@@ -3,8 +3,8 @@ const excelToJson = require('convert-excel-to-json');
 const stringHash = require("string-hash");
 
 /* Temp - the filenames we expect to find */
-const EMS_FILE_NAME = "ems.xls";
-const DAVID_SCHED_FILE_NAME = "david.xlsx";
+const EMS_FILE_NAME = "ems-small.xlsx";
+const DAVID_SCHED_FILE_NAME = "david-small.xlsx";
 
 /**
  * Read an excel (.xls or .xlsx) file and return an object with the data.
@@ -60,6 +60,7 @@ function lastIndexOnOrBefore(events, lastDate, key="Date"){
 /**
  * Hash properties of an event to generate a unique ID
  * @param {Object} row The event object to hash
+ * @returns {number} The ID of the row
  */
 function getRowId(row){
     let dateKey, nameKey, roomKey;
@@ -76,7 +77,7 @@ function getRowId(row){
 
 /**
  * Find the index of an event with the given ID.
- * @param {string} id The id (hash) of a row
+ * @param {number} id The id (hash) of a row
  * @param {Array.<Object>} array The array of events
  */
 function getIndexById(id, array){
@@ -122,34 +123,29 @@ function main(){
     let lastIdx  = lastIndexOnOrBefore(dvdEvents, lastEventDate);
 
     // in David's sheet, throw away cells before first date and after last date
-    console.log(`${dvdEvents.length} events originally`);
     dvdEvents.splice(lastIdx);
     dvdEvents.splice(0, firstIdx);
-    console.log(`Now ${dvdEvents.length} events (${emsEvents.length} in other)`);
 
-    console.log(getRowId(dvdEvents[0]));
-    console.log(getRowId(emsEvents[0]));
-
-    dvdEvents.map(event => {
+    dvdEvents.forEach(event => {
         event._id = getRowId(event);
-        return event;
     });
-    emsEvents.map(event => {
+    emsEvents.forEach(event => {
         event._id = getRowId(event);
-        return event;
     });
 
     // Inner join to get a union of events in both sheets
     let ij = innerjoin(dvdEvents, emsEvents, x => x._id);
-    console.log(`${ij.length} events in inner joined list`);
 
     ij.forEach(event => {
+        /* For some reason, the _id is cast to a string in innerjoin() */
+        event._id = parseInt(event._id, 10);
+
         let {_id} = event;
         if(getIndexById(_id, emsEvents) < 0){
             // compare EMS to InnerJoin - events not in EMS sheet were cancelled
-            console.log(`Missing from EMS: ${eventToString(event)}`);
+            console.log(`Missing from EMS Database : ${eventToString(event)}`);
         } else if(getIndexById(_id, dvdEvents) < 0){
-            // compare David's to IJ - events no in David's were added
+            // compare David's to IJ - events not in David's were added
             console.log(`Missing from David's sheet: ${eventToString(event)}`);
         }
     });
