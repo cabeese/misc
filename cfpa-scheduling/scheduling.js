@@ -1,8 +1,17 @@
 const innerjoin = require("inner-join");
 const excelToJson = require('convert-excel-to-json');
 const stringHash = require("string-hash");
- 
-function getDataFromFile(filename, sheetName){
+
+/* Temp - the filenames we expect to find */
+const EMS_FILE_NAME = "ems.xls";
+const DAVID_SCHED_FILE_NAME = "david.xlsx";
+
+/**
+ * Read an excel (.xls or .xlsx) file and return an object with the data.
+ * @param {string} filename The excel sheet file name
+ * @param {string} sheetName The name of the sheet to read
+ */
+function readExcelFile(filename, sheetName){
     const result = excelToJson({
         sourceFile: filename,
         header: {
@@ -16,19 +25,27 @@ function getDataFromFile(filename, sheetName){
     return Object.values(result[sheetName]);
 }
 
-const EMS_FILE_NAME = "ems.xls";
-const DAVID_SCHED_FILE_NAME = "david.xlsx";
-
+/**
+ * Find the index of the first event on or immediately after a given date.
+ * @param {Array.<Object>} events The list of events to search
+ * @param {string} startDate The date of the first event to find
+ * @param {string} key The column name for the date property
+ * @returns {number} The index of the event, or else -1
+ */
 function firstIndexOnOrAfter(events, startDate, key="Date"){
     for(let i=0; i<events.length; i++){
         /* Did we find the first event? */
         if(events[i][key] >= startDate) return i;
-
-        /* If first even is missing, give index before it */
-        // if(events[i][key] > startDate) return i-1;
     }
     return -1;
 }
+
+/**
+ * Find the index of the last event on or immediately before a given date.
+ * @param {Array.<Object>} events The list of events to search
+ * @param {string} lastDate The date of the last event to find
+ * @param {string} key THe column name for the date property
+ */
 function lastIndexOnOrBefore(events, lastDate, key="Date"){
     for(let i=0; i<events.length; i++){
         /* Did we find the first event? */
@@ -40,6 +57,10 @@ function lastIndexOnOrBefore(events, lastDate, key="Date"){
     return -1;
 }
 
+/**
+ * Hash properties of an event to generate a unique ID
+ * @param {Object} row The event object to hash
+ */
 function getRowId(row){
     let dateKey, nameKey, roomKey;
     nameKey = "Booking Event Name";
@@ -53,6 +74,11 @@ function getRowId(row){
     return stringHash(str);
 }
 
+/**
+ * Find the index of an event with the given ID.
+ * @param {string} id The id (hash) of a row
+ * @param {Array.<Object>} array The array of events
+ */
 function getIndexById(id, array){
     for(let i=0; i<array.length; i++){
         if(array[i]._id === id) return i;
@@ -60,6 +86,10 @@ function getIndexById(id, array){
     return -1;
 }
 
+/**
+ * A '.toString()' method for events.
+ * @param {Object} event The event to display
+ */
 function eventToString(event){
     let dateKey, nameKey, roomKey;
     let date;
@@ -81,8 +111,8 @@ function eventToString(event){
 
 function main(){
     // read both sheets
-    let emsEvents = getDataFromFile(EMS_FILE_NAME, "Sheet");
-    let dvdEvents = getDataFromFile(DAVID_SCHED_FILE_NAME, "Events");
+    let emsEvents = readExcelFile(EMS_FILE_NAME, "Sheet");
+    let dvdEvents = readExcelFile(DAVID_SCHED_FILE_NAME, "Events");
 
     // find first and last dates on EMS sheet (smaller range)
     let firstEventDate = emsEvents[0]["Booking Date"];
@@ -124,7 +154,5 @@ function main(){
         }
     });
 }
-
-main();
 
 module.exports = main;
