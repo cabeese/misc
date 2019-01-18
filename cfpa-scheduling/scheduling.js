@@ -122,6 +122,8 @@ function main(emsFn, davidFn){
     dvdEvents.splice(lastIdx);
     dvdEvents.splice(0, firstIdx);
 
+    // Give each row (in both sheets) an ID. The same event should hash to the
+    // same _id in both sheets so we can compare them quickly
     dvdEvents.forEach(event => {
         event._id = getRowId(event);
     });
