@@ -108,8 +108,19 @@ function eventToString(event){
 
 function main(emsFn, davidFn){
     // read both sheets
-    let emsEvents = readExcelFile(emsFn, "Sheet");
-    let dvdEvents = readExcelFile(davidFn, "Events");
+    let emsEvents, dvdEvents;
+    try{
+        emsEvents = readExcelFile(emsFn, "Sheet");
+    } catch(e){
+        throw new Error("Unable to read that EMS spreadsheet! " +
+                        "Check that you provided the correct path.");
+    }
+    try{
+        dvdEvents = readExcelFile(davidFn, "Events");
+    } catch(e){
+        throw new Error("Unable to read David's spreadsheet! " +
+                        "Check that you provided the correct path.");
+    }
 
     // find first and last dates on EMS sheet (smaller range)
     let firstEventDate = emsEvents[0]["Booking Date"];

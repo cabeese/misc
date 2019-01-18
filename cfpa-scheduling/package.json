@@ -4,13 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "ncc build wrapper.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Noah Strong <noah@inspiredware.com>",
   "license": "UNLICENSED",
   "dependencies": {
+    "@zeit/ncc": "^0.9.0",
     "convert-excel-to-json": "^1.4.1",
     "inner-join": "^4.0.0",
+    "readline-sync": "^1.4.9",
     "string-hash": "^1.1.3"
   }
 }
