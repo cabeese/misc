@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "ncc build wrapper.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "package": "npm run build && npm run zip",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "zip": "cp RUN.bat dist && cd dist && zip ../SCHEDULING.zip RUN.bat index.js"
   },
   "author": "Noah Strong <noah@inspiredware.com>",
   "license": "UNLICENSED",
